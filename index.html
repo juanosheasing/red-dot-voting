@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Red Dot Book Award Voting 2025-2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -313,8 +314,47 @@
         const formNameInput = document.getElementById('formName');
         const recordsContainer = document.getElementById('recordsContainer');
 
+        const EMAIL_SERVICE_ID = 'YOUR_EMAIL_SERVICE_ID';
+        const EMAIL_TEMPLATE_ID = 'YOUR_EMAIL_TEMPLATE_ID';
+        const EMAIL_PUBLIC_KEY = 'YOUR_EMAIL_PUBLIC_KEY';
+
         function saveVotes() {
             localStorage.setItem('redDotVotes', JSON.stringify(votes));
+        }
+
+        function getResultsText() {
+            const totals = calculateTotals();
+            let text = 'Red Dot Voting Results\n\n';
+            text += 'Vote Totals:\n';
+            BOOK_NAMES.forEach((name, i) => {
+                text += `${name}: ${totals[i]} votes\n`;
+            });
+            text += `\nTotal votes: ${totals.reduce((a, b) => a + b, 0)}`;
+            return text;
+        }
+
+        function sendEmail(action) {
+            if (EMAIL_PUBLIC_KEY === 'YOUR_EMAIL_PUBLIC_KEY') {
+                console.log('Email not configured. Results:', getResultsText());
+                return;
+            }
+            
+            emailjs.init(EMAIL_PUBLIC_KEY);
+            
+            const totals = calculateTotals();
+            const templateParams = {
+                to_email: 'juan.oshea@cognita.com',
+                subject: 'Red Dot Voting Results',
+                message: `${action}\n\n${getResultsText()}`
+            };
+            
+            emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, templateParams)
+                .then(() => {
+                    console.log('Email sent successfully');
+                })
+                .catch((error) => {
+                    console.error('Email error:', error);
+                });
         }
 
         function loadVotes() {
@@ -470,6 +510,7 @@
                 saveVotes();
                 renderTable();
                 renderChart();
+                sendEmail('Vote deleted');
                 showNotification('Vote deleted');
             }
         }
@@ -490,9 +531,11 @@
                 showNotification('Votes updated');
                 editingIndex = null;
                 document.getElementById('submitBtn').textContent = 'Submit Votes';
+                sendEmail(`Votes updated for ${form}`);
             } else {
                 votes.push({ form, votes: voteValues, timestamp: new Date().toISOString() });
                 showNotification('Votes submitted');
+                sendEmail(`New votes submitted for ${form}`);
             }
             
             saveVotes();
