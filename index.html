@@ -314,8 +314,8 @@
         const formNameInput = document.getElementById('formName');
         const recordsContainer = document.getElementById('recordsContainer');
 
-        const EMAIL_SERVICE_ID = 'YOUR_EMAIL_SERVICE_ID';
-        const EMAIL_TEMPLATE_ID = 'YOUR_EMAIL_TEMPLATE_ID';
+        const EMAIL_SERVICE_ID = 'ZX87ySkjv3FOhGwSaiBPj';
+        const EMAIL_TEMPLATE_ID = 'service_hjd20gs';
         const EMAIL_PUBLIC_KEY = 'H88AmMOm2dgwctYpr';
 
         function saveVotes() {
@@ -341,10 +341,8 @@
             
             emailjs.init(EMAIL_PUBLIC_KEY);
             
-            const totals = calculateTotals();
             const templateParams = {
                 to_email: 'juan.oshea@cognita.com',
-                subject: 'Red Dot Voting Results',
                 message: `${action}\n\n${getResultsText()}`
             };
             
