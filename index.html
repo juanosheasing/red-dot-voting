@@ -342,7 +342,7 @@
             emailjs.init(EMAIL_PUBLIC_KEY);
             
             const templateParams = {
-                to_email: 'juanoshea@gmail.com',
+                from_name: 'Red Dot Voting',
                 message: `${action}\n\n${getResultsText()}`
             };
             
@@ -352,7 +352,6 @@
                 })
                 .catch((error) => {
                     console.error('Email error:', error);
-                    alert('Email error: ' + JSON.stringify(error));
                 });
         }
 
