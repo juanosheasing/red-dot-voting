@@ -315,7 +315,7 @@
         const recordsContainer = document.getElementById('recordsContainer');
 
         const EMAIL_SERVICE_ID = 'service_hjd20gs';
-        const EMAIL_TEMPLATE_ID = 'template_hjd20gs';
+        const EMAIL_TEMPLATE_ID = 'template_reddot_voting';
         const EMAIL_PUBLIC_KEY = 'H88AmMOm2dgwctYpr';
 
         function saveVotes() {
@@ -346,11 +346,12 @@
                 message: `${action}\n\n${getResultsText()}`
             };
             
-            emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, templateParams)
+            emailjs.send(EMAIL_SERVICE_ID, 'template_reddot_voting', templateParams)
                 .then((response) => {
-                    alert('Email sent successfully!');
+                    console.log('Email sent successfully!');
                 })
                 .catch((error) => {
+                    console.error('Email error:', error);
                     alert('Email error: ' + JSON.stringify(error));
                 });
         }
