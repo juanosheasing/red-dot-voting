@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Dot Book Award Voting 2025-2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-bottom: 15px;
+            color: #444;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .book-covers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .book-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .book-card img {
+            width: 120px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            margin-bottom: 8px;
+        }
+        .book-card .book-name {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            min-height: 30px;
+        }
+        .book-card input {
+            width: 70px;
+            text-align: center;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .book-card input:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+        .form-header {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group input[type="text"] {
+            width: 120px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .total-row {
+            background: #e8f4fd !important;
+            font-weight: 600;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+        .notification.success {
+            background: #10b981;
+        }
+        .notification.error {
+            background: #ef4444;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .book-covers {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 6px;
+            }
+            table th small, table td {
+                font-size: 10px;
+            }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Red Dot Book Award Voting 2025-2026</h1>
+    
+    <div class="section">
+        <h2>Record Votes</h2>
+        <form id="voteForm">
+            <div class="form-header">
+                <div class="form-group">
+                    <label for="formName">Form</label>
+                    <input type="text" id="formName" placeholder="e.g., 1O, 5B, PA" required>
+                </div>
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit Votes</button>
+                    <button type="button" class="btn btn-secondary" id="clearBtn">Clear Form</button>
+                </div>
+            </div>
+            <div class="book-covers">
+                <div class="book-card">
+                    <img src="covers/book1.png" alt="The Man Who Didn't Like Animals">
+                    <span class="book-name">The Man Who Didn't Like Animals</span>
+                    <input type="number" id="vote1" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book2.jpg" alt="Shu Lin's Grandpa">
+                    <span class="book-name">Shu Lin's Grandpa</span>
+                    <input type="number" id="vote2" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book3.jpg" alt="There Are No Ants in This Book">
+                    <span class="book-name">There Are No Ants in This Book</span>
+                    <input type="number" id="vote3" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book4.jpg" alt="A Better Best Friend">
+                    <span class="book-name">A Better Best Friend</span>
+                    <input type="number" id="vote4" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book5.jpg" alt="Dim Sum Palace">
+                    <span class="book-name">Dim Sum Palace</span>
+                    <input type="number" id="vote5" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book6.jpg" alt="Kadooboo!">
+                    <span class="book-name">Kadooboo!</span>
+                    <input type="number" id="vote6" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book7.jpg" alt="I Love You Blue">
+                    <span class="book-name">I Love You Blue</span>
+                    <input type="number" id="vote7" min="0" value="0">
+                </div>
+                <div class="book-card">
+                    <img src="covers/book8.jpg" alt="Our Nipa Hut">
+                    <span class="book-name">Our Nipa Hut</span>
+                    <input type="number" id="vote8" min="0" value="0">
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div class="section">
+        <h2>Vote Records</h2>
+        <div id="recordsContainer">
+            <div class="empty-state">No votes recorded yet. Submit a form above to begin.</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Results</h2>
+        <div class="chart-container">
+            <canvas id="resultsChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const BOOK_NAMES = [
+            'The Man Who Didnt Like Animals',
+            'Shu Lins Grandpa',
+            'There Are No Ants in This Book',
+            'A Better Best Friend',
+            'Dim Sum Palace',
+            'Kadooboo!',
+            'I Love You Blue',
+            'Our Nipa Hut'
+        ];
+
+        const BOOK_COLORS = [
+            '#EF4444', '#F97316', '#EAB308', '#22C55E', 
+            '#14B8A6', '#3B82F6', '#8B5CF6', '#EC4899'
+        ];
+
+        let votes = [];
+        let editingIndex = null;
+        let resultsChart = null;
+
+        const voteForm = document.getElementById('voteForm');
+        const formNameInput = document.getElementById('formName');
+        const recordsContainer = document.getElementById('recordsContainer');
+
+        function saveVotes() {
+            localStorage.setItem('redDotVotes', JSON.stringify(votes));
+        }
+
+        function loadVotes() {
+            const stored = localStorage.getItem('redDotVotes');
+            if (stored) {
+                try {
+                    votes = JSON.parse(stored);
+                } catch (e) {
+                    votes = [];
+                }
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function getVoteValues() {
+            return Array.from({ length: 8 }, (_, i) => {
+                const val = parseInt(document.getElementById(`vote${i + 1}`).value) || 0;
+                return Math.max(0, val);
+            });
+        }
+
+        function setVoteValues(voteArray) {
+            voteArray.forEach((val, i) => {
+                document.getElementById(`vote${i + 1}`).value = val;
+            });
+        }
+
+        function clearForm() {
+            formNameInput.value = '';
+            setVoteValues(Array(8).fill(0));
+            editingIndex = null;
+            document.getElementById('submitBtn').textContent = 'Submit Votes';
+        }
+
+        function calculateTotals() {
+            const totals = Array(8).fill(0);
+            votes.forEach(vote => {
+                vote.votes.forEach((count, i) => {
+                    totals[i] += count;
+                });
+            });
+            return totals;
+        }
+
+        function renderChart() {
+            const totals = calculateTotals();
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            
+            if (resultsChart) {
+                resultsChart.destroy();
+            }
+            
+            resultsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: BOOK_NAMES,
+                    datasets: [{
+                        label: 'Votes',
+                        data: totals,
+                        backgroundColor: BOOK_COLORS,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable() {
+            if (votes.length === 0) {
+                recordsContainer.innerHTML = '<div class="empty-state">No votes recorded yet. Submit a form above to begin.</div>';
+                return;
+            }
+
+            const totals = calculateTotals();
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Form</th>
+                            ${BOOK_NAMES.map((name, i) => `<th>${name}</th>`).join('')}
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            votes.forEach((vote, index) => {
+                html += `
+                    <tr>
+                        <td><strong>${vote.form}</strong></td>
+                        ${vote.votes.map(v => `<td>${v}</td>`).join('')}
+                        <td>
+                            <button class="btn btn-warning" onclick="editVote(${index})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteVote(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        <tr class="total-row">
+                            <td><strong>Total</strong></td>
+                            ${totals.map(t => `<td><strong>${t}</strong></td>`).join('')}
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            recordsContainer.innerHTML = html;
+        }
+
+        function editVote(index) {
+            const vote = votes[index];
+            formNameInput.value = vote.form;
+            setVoteValues(vote.votes);
+            editingIndex = index;
+            document.getElementById('submitBtn').textContent = 'Update Votes';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteVote(index) {
+            if (confirm(`Delete votes for ${votes[index].form}?`)) {
+                votes.splice(index, 1);
+                saveVotes();
+                renderTable();
+                renderChart();
+                showNotification('Vote deleted');
+            }
+        }
+
+        voteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const form = formNameInput.value.trim();
+            if (!form) {
+                showNotification('Please enter a form name', 'error');
+                return;
+            }
+            
+            const voteValues = getVoteValues();
+            
+            if (editingIndex !== null) {
+                votes[editingIndex] = { form, votes: voteValues, timestamp: new Date().toISOString() };
+                showNotification('Votes updated');
+                editingIndex = null;
+                document.getElementById('submitBtn').textContent = 'Submit Votes';
+            } else {
+                votes.push({ form, votes: voteValues, timestamp: new Date().toISOString() });
+                showNotification('Votes submitted');
+            }
+            
+            saveVotes();
+            clearForm();
+            renderTable();
+            renderChart();
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', clearForm);
+
+        loadVotes();
+        renderTable();
+        renderChart();
+    </script>
+</body>
+</html>
